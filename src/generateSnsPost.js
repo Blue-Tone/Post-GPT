@@ -1,40 +1,49 @@
 // generateSnsPost.js
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 
-const openai = require("openai");
+const { Configuration, OpenAIApi } = require("openai");
 const fs = require("fs");
 
-openai.apiKey = "your_openai_api_key";
+const apiKey = process.env.OPENAI_API_KEY;
+
+if (!apiKey) {
+  console.error("Error: Please set the OPENAI_API_KEY environment variable.");
+  process.exit(1);
+}
+
+if (process.argv.length < 3) {
+  console.error("Error: Please provide a topic as a command line argument.");
+  process.exit(1);
+}
+
+const topic = process.argv[2];
+
+const configuration = new Configuration({ apiKey: apiKey });
+const openai = new OpenAIApi(configuration);
 
 const settings = JSON.parse(fs.readFileSync("settings.json", "utf-8"));
 
-async function generateSnsPost(topic, maxTokens) {
+async function generateSnsPost(topic) {
   try {
-    const response = await openai.Completion.create({
-      engine: settings.engine,
-      prompt: topic,
-      max_tokens: maxTokens,
+    const prompt = `Create an engaging SNS post about ${topic}.`;
+
+    const response = await openai.createCompletion({
+      model: settings.engine,
+      prompt: prompt,
+      max_tokens: settings.max_tokens,
       n: settings.n,
-      stop: settings.stop,
+      stop: null,
       temperature: settings.temperature,
     });
 
-    return response.choices[0].text.trim();
+    const postText = response.data.choices[0].text.trim();
+    console.log(`SNS Post about ${topic}: ${postText}`);
   } catch (error) {
-    console.error("Error generating SNS post:", error);
+    console.error("Error:", error);
   }
 }
 
-(async () => {
-  const topic = process.argv[2];
-  const maxTokens = parseInt(settings.maxTokens);
+generateSnsPost(topic);
 
-  if (!topic) {
-    console.error("トピックをコマンドライン引数で指定してください。");
-    process.exit(1);
-  }
-
-  const snsPost = await generateSnsPost(topic, maxTokens);
-
-  console.log("生成されたSNS投稿文:");
-  console.log(snsPost);
-})();
