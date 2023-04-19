@@ -1,0 +1,22 @@
+{
+  "name": "post-gpt",
+  "version": "1.0.0",
+  "description": "Post-GPT is a SNS post botthat utilizes OpenAI's GPT technology.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Blue-Tone/Post-GPT.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Blue-Tone/Post-GPT/issues"
+  },
+  "homepage": "https://github.com/Blue-Tone/Post-GPT#readme",
+  "dependencies": {
+    "openai": "^3.2.1"
+  }
+}
