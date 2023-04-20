@@ -27,19 +27,19 @@ const settings = JSON.parse(fs.readFileSync("settings.json", "utf-8"));
 
 async function generateSnsPost(topic) {
   try {
-    const prompt = `Create an engaging SNS post about ${topic}.`;
+    const prompt = `${topic}について、SNS投稿の文字列を作成してください。`;
 
-    const response = await openai.createCompletion({
-      model: settings.engine,
-      prompt: prompt,
-      max_tokens: settings.max_tokens,
-      n: settings.n,
-      stop: null,
-      temperature: settings.temperature,
+    // @see https://platform.openai.com/docs/api-reference/chat/create?lang=node.js
+    // ToDo:パラメータをsettings.jsonから読み込む
+    const response = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      messages: [{role: "user", content: prompt}],
     });
+    //console.dir(response.data.choices[0].message);
+    const postText = response.data.choices[0].message.content;
+    //console.log(`SNS Post about ${topic}: ${postText}`);
+    console.log(`${postText}`);
 
-    const postText = response.data.choices[0].text.trim();
-    console.log(`SNS Post about ${topic}: ${postText}`);
   } catch (error) {
     console.error("Error:", error);
   }
